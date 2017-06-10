@@ -20,10 +20,9 @@ class Grouper():
     '''
     Take csv file of users and their lat long and split into even groups
     '''
-    def __init__(self, csvfile, groups=2, threshold=100, quiet=False):
+    def __init__(self, csvfile, groups=2, quiet=False):
         self.csvfile = csvfile
         self.groups = groups
-        self.threshold = threshold
         self.quiet = quiet
 
         # Read list of users
@@ -32,7 +31,7 @@ class Grouper():
             users += self.__read_csv(file)
         self.num_per_group = int(math.ceil(len(users) / int(groups)))
 
-        self.built_groups = self.__build_groups(users, self.groups, self.threshold)
+        self.built_groups = self.__build_groups(users, self.groups)
         if not self.quiet:
             for index, group in enumerate(self.built_groups):
                 print('Group {index}: {number} members'.format(
@@ -171,7 +170,7 @@ class Grouper():
                        ):
                         accounted_for.append(other_user['name'])
                         group.append(other_user)
-            if group and len(group) >= self.num_per_group * (migration_size * .01):
+            if group and len(group) >= self.num_per_group:
                 groups_list.append(group)
             else:
                 groups_list[-1] += group
@@ -253,10 +252,6 @@ def main():
     parser.add_argument('-g', '--groups',
             default=2,
             help='Set desired number of groups. Will be split as evenly as possible')
-    parser.add_argument('--threshold',
-            default=100,
-            type=int,
-            help='Group failure percentage. If group membership is below this threshold, migrate it into previous group.')
     parser.add_argument('-o', '--output',
             help='Write to file in csv format')
     parser.add_argument('--print-group-users',
@@ -271,14 +266,10 @@ def main():
             action='store_true',
             help='Disable standard output of groups')
     args = parser.parse_args()
-    if args.threshold > 100 or args.threshold < 0:
-        parser.error('--migration must be between 0-100')
-        exit()
 
     primary_group = Grouper(
             args.file, 
             groups=args.groups, 
-            threshold=args.threshold,
             quiet=args.quiet)
 
     if args.output:
