@@ -183,34 +183,6 @@ class GroupSplitter():
         return groups_list
 
 
-    def __distance_other_users(self, user, user_dict):
-        """
-        Compares user against users in user_dict
-        expects user and users in user_dict to be dictionaries 
-        with keys of 'name' and 'latlon' for their name and tuple of
-        latitude and longitude.
-        Builds list of tuples of name and distance from user to 
-        each other_user in user_dict.
-        """
-
-        other_user_distances = list()
-        for other_user in user_dict:
-            if  (
-                    other_user['latlon'][1] > user['latlon'][1]
-                    and len(other_user_distances) <= self.num_per_group
-                ):
-                other_user_distances.append(
-                    (
-                        other_user['name'],
-                        self.__distance(user['latlon'], other_user['latlon'])
-                    ))
-
-        # Sort based on distance - lowest first
-        other_user_distances.sort(key=itemgetter(1))
-
-        return other_user_distances
-
-
     def write_csv(self, output_file):
         '''
         Write csv file of groups and their users
