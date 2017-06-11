@@ -16,7 +16,7 @@ from operator import itemgetter
 import matplotlib.pyplot as plt
 import matplotlib.cm as cm
 
-class Grouper():
+class GroupSplitter():
     '''
     Take csv file of users and their lat long and split into even groups
     '''
@@ -220,11 +220,13 @@ class Grouper():
             writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
             writer.writeheader()
 
+            if not self.quiet:
+                print('Writing to file {}'.format(output_file))
             for index, group in enumerate(self.built_groups):
                 Names = ' '.join([user['name'] for user in group])
                 Group = index
                 writer.writerow({
-                    'Group': 'Group{}'.format(Group),
+                    'Group': 'Group {}'.format(Group),
                     'Names': Names})
 
 
@@ -255,7 +257,7 @@ def main():
             help='Disable standard output of groups')
     args = parser.parse_args()
 
-    primary_group = Grouper(
+    primary_group = GroupSplitter(
             args.file, 
             groups=args.groups, 
             quiet=args.quiet)
