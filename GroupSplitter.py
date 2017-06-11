@@ -153,26 +153,21 @@ class Grouper():
         groups_list = list()
 
         for user in user_list:
-            group = list()
+            current_group = list()
             if user['name'] not in accounted_for:
                 self.num_per_group = int(math.ceil(len(user_list) / int(groups)))
-                close_buddies = [
-                        other_user[0]
-                        for other_user in self.__distance_other_users(user, user_list)[:self.num_per_group]]
-                user['close_buddies'] = self.__distance_other_users(user, user_list)
 
-                for other_user in user_list:
+                for other_user in sorted(user_list, key=lambda other_user: self.__distance(user['latlon'], other_user['latlon'])):
                     if (
-                            other_user['name'] in close_buddies
-                            and other_user['name'] not in accounted_for
-                            and len(group) <= self.num_per_group
+                            other_user['name'] not in accounted_for
+                            and len(current_group) <= self.num_per_group
                        ):
                         accounted_for.append(other_user['name'])
-                        group.append(other_user)
-            if group and len(group) >= self.num_per_group:
-                groups_list.append(group)
+                        current_group.append(other_user)
+            if current_group and len(current_group) >= self.num_per_group:
+                groups_list.append(current_group)
             else:
-                groups_list[-1] += group
+                groups_list[-1] += current_group
 
                 # After merge into previous group, see if previous group
                 # is double the size of the max number per group.
