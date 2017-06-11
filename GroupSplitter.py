@@ -157,7 +157,10 @@ class Grouper():
             if user['name'] not in accounted_for:
                 self.num_per_group = int(math.ceil(len(user_list) / int(groups)))
 
-                for other_user in sorted(user_list, key=lambda other_user: self.__distance(user['latlon'], other_user['latlon'])):
+                for other_user in sorted(
+                        user_list, 
+                        key=lambda other_user: self.__distance(user['latlon'], other_user['latlon'])
+                        ):
                     if (
                             other_user['name'] not in accounted_for
                             and len(current_group) <= self.num_per_group
