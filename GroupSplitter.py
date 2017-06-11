@@ -144,11 +144,9 @@ class Grouper():
         return distance
 
 
-    def __build_groups(self, user_list, groups=2, migration_size=0.4):
+    def __build_groups(self, user_list, groups=2):
         """
         Splits user_list into n groups
-        If group is smaller then migration_size percentage of maxinum group size, 
-        merge it with the previous group
         """
 
         accounted_for = list()
@@ -159,8 +157,9 @@ class Grouper():
             if user['name'] not in accounted_for:
                 self.num_per_group = int(math.ceil(len(user_list) / int(groups)))
                 close_buddies = [
-                        user[0]
-                        for user in self.__distance_other_users(user, user_list)[:self.num_per_group]]
+                        other_user[0]
+                        for other_user in self.__distance_other_users(user, user_list)[:self.num_per_group]]
+                user['close_buddies'] = self.__distance_other_users(user, user_list)
 
                 for other_user in user_list:
                     if (
@@ -178,7 +177,7 @@ class Grouper():
                 # After merge into previous group, see if previous group
                 # is double the size of the max number per group.
                 # If it is, split it and append it as a new group
-                if len(groups_list[-1]) >= self.num_per_group * 1.95:
+                if len(groups_list[-1]) >= self.num_per_group * 1.5:
                     splitting_group = groups_list[-1][self.num_per_group:]
                     del(groups_list[-1][self.num_per_group:])
                     groups_list.append(splitting_group)
@@ -196,31 +195,22 @@ class Grouper():
         each other_user in user_dict.
         """
 
-        user_distances = list()
+        other_user_distances = list()
         for other_user in user_dict:
-            # (name, (lat, lon))
             if  (
                     other_user['latlon'][1] > user['latlon'][1]
-                    and len(user_distances) <= self.num_per_group
+                    and len(other_user_distances) <= self.num_per_group
                 ):
-                user_distances.append((
-                    other_user['name'],
-                    self.__distance(user['latlon'], other_user['latlon'])
-                ))
-
-        #user_distances = [
-            ## (name, (lat, lon))
-            #(
-                #other_user['name'],
-                #self.__distance(user['latlon'], other_user['latlon'])
-            #)
-            #for other_user in user_dict
-            #if other_user['latlon'][1] > user['latlon'][1]]
+                other_user_distances.append(
+                    (
+                        other_user['name'],
+                        self.__distance(user['latlon'], other_user['latlon'])
+                    ))
 
         # Sort based on distance - lowest first
-        user_distances.sort(key=itemgetter(1))
+        other_user_distances.sort(key=itemgetter(1))
 
-        return user_distances
+        return other_user_distances
 
 
     def write_csv(self, built_groups, output_file):
