@@ -208,7 +208,7 @@ class Grouper():
         return other_user_distances
 
 
-    def write_csv(self, built_groups, output_file):
+    def write_csv(self, output_file):
         '''
         Write csv file of groups and their users
         '''
@@ -217,7 +217,7 @@ class Grouper():
             writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
             writer.writeheader()
 
-            for index, group in enumerate(built_groups):
+            for index, group in enumerate(self.built_groups):
                 Names = ' '.join([user['name'] for user in group])
                 Group = index
                 writer.writerow({
