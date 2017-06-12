@@ -122,9 +122,6 @@ class GroupSplitter():
                     {}'''.format( 'name', 'latitude', 'longitude'))
                 exit()
 
-        # Sorts users from west to east                                                 
-        users.sort(key=lambda lon: lon['latlon'][1])
-
         return users
 
 
@@ -149,7 +146,11 @@ class GroupSplitter():
         Splits user_list into n groups
         """
 
-        user_list_copy = user_list[:]
+        # Make copy of user_list and sort it by longitude, west -> east
+        user_list_copy = sorted(
+                user_list[:], 
+                key=lambda lon: lon['latlon'][1])
+
         groups_list = list()
 
         for user in user_list_copy:
