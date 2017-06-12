@@ -1,7 +1,8 @@
 #!/usr/bin/python3
 
-# Python3 support
-from __future__ import division, absolute_import, print_function 
+# Python2 support
+# https://docs.python.org/3/reference/simple_stmts.html#future-statements
+from __future__ import absolute_import, division, generators, unicode_literals, print_function, nested_scopes, with_statement
 
 import argparse
 import math
@@ -11,8 +12,7 @@ from pprint import PrettyPrinter
 from random import choice
 from operator import itemgetter
 
-# 3rd party
-# Plotting
+# 3rd party - Plotting
 import matplotlib.pyplot as plt
 import matplotlib.cm as cm
 
