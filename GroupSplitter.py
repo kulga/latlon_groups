@@ -87,19 +87,15 @@ class GroupSplitter():
         with open(file) as csv_users:
             reader = csv.reader(csv_users)
             try:
-                header = [item.lower() for item in next(reader)]
+                headers = [item.lower() for item in next(reader)]
             except UnicodeDecodeError as error:
                 print( 'I got a error!\nAre you sure this is a CSV file?\n\n{}'.format(error))
                 exit(1)
 
-            if (
-                    'name' in header
-                    and 'latitude' in header 
-                    and 'longitude' in header
-               ):
-                name = header.index('name')
-                lat = header.index('latitude')
-                lon = header.index('longitude')
+            if all(header in headers for header in ['name', 'latitude', 'longitude']):
+                name = headers.index('name')
+                lat = headers.index('latitude')
+                lon = headers.index('longitude')
                     
                 skipped_users = 0
                 users = list()
