@@ -141,17 +141,17 @@ class GroupSplitter():
         """
         Splits user_list into n groups
         """
+        self.num_per_group = int(math.ceil(len(user_list) / int(groups)))
 
         # Make copy of user_list and sort it by longitude, west -> east
         user_list_copy = sorted(
-                user_list[:], 
+                user_list.copy(), 
                 key=lambda lon: lon['latlon'][1])
 
         groups_list = list()
 
         for user in user_list_copy:
             current_group = list()
-            self.num_per_group = int(math.ceil(len(user_list) / int(groups)))
 
             for other_user in sorted(user_list_copy, 
                     key=lambda other_user: self.__distance(user['latlon'], other_user['latlon'])
