@@ -10,7 +10,6 @@ import csv
 
 from pprint import PrettyPrinter
 from random import choice
-from operator import itemgetter
 
 # 3rd party - Plotting
 import matplotlib.pyplot as plt
@@ -156,9 +155,13 @@ class GroupSplitter():
             for other_user in sorted(user_list_copy, 
                     key=lambda other_user: self.__distance(user['latlon'], other_user['latlon'])
                     ):
+                # If current_group not big enough, pop from user_list_copy
+                # and append to current_group
+                # Once list is big enough, break for loop
                 if len(current_group) <= self.num_per_group:
-                    current_group.append(other_user)
-                    del(user_list_copy[user_list_copy.index(other_user)])
+                    current_group.append(user_list_copy.pop(user_list_copy.index(other_user)))
+                else:
+                    break
             if current_group and len(current_group) >= self.num_per_group:
                 groups_list.append(current_group)
             else:
