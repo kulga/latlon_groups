@@ -150,25 +150,18 @@ class GroupSplitter():
         """
 
         user_list_copy = user_list[:]
-        accounted_for = list()
         groups_list = list()
 
         for user in user_list_copy:
             current_group = list()
-            if user['name'] not in accounted_for:
-                self.num_per_group = int(math.ceil(len(user_list) / int(groups)))
+            self.num_per_group = int(math.ceil(len(user_list) / int(groups)))
 
-                for other_user in sorted(
-                        user_list_copy, 
-                        key=lambda other_user: self.__distance(user['latlon'], other_user['latlon'])
-                        ):
-                    if (
-                            other_user['name'] not in accounted_for
-                            and len(current_group) <= self.num_per_group
-                       ):
-                        accounted_for.append(other_user['name'])
-                        current_group.append(other_user)
-                        del(user_list_copy[user_list_copy.index(other_user)])
+            for other_user in sorted(user_list_copy, 
+                    key=lambda other_user: self.__distance(user['latlon'], other_user['latlon'])
+                    ):
+                if len(current_group) <= self.num_per_group:
+                    current_group.append(other_user)
+                    del(user_list_copy[user_list_copy.index(other_user)])
             if current_group and len(current_group) >= self.num_per_group:
                 groups_list.append(current_group)
             else:
