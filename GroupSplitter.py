@@ -5,8 +5,9 @@
 from __future__ import absolute_import, division, generators, unicode_literals, print_function, nested_scopes, with_statement
 
 import argparse
-import math
+import math 
 import csv
+import sys
 
 from pprint import PrettyPrinter
 from random import choice
@@ -102,12 +103,12 @@ class GroupSplitter():
                             {}
                             {}
                             {}'''.format( 'id', 'latitude', 'longitude'))
-                        exit()
+                        sys.exit()
                 if skipped_users > 0:
                     print('Skipped {rows} rows due to missing values'.format(rows=skipped_users))
             except UnicodeDecodeError as error:
                 print( 'I got a error!\nAre you sure this is a CSV file?\n\n{}'.format(error))
-                exit()
+                sys.exit()
 
         return users
 
@@ -136,7 +137,7 @@ class GroupSplitter():
 
         # Make copy of user_list and sort it by longitude, west -> east
         user_list_copy = sorted(
-                user_list.copy(), 
+                list(user_list), 
                 key=lambda lon: lon['latlon'][1])
 
         groups_list = list()
