@@ -27,7 +27,7 @@ class GroupSplitter():
         # Read list of users
         users = list()
         for file in self.csvfile:
-            users += self.__read_csv(file)
+            users.extend(self.__read_csv(file))
         self.num_per_group = int(math.ceil(len(users) / int(groups)))
 
         self.built_groups = self.__build_groups(users, self.groups)
@@ -44,7 +44,7 @@ class GroupSplitter():
             pp = PrettyPrinter(indent=4)
             pp.pprint('Group:{group} Users:{users}'.format(
                 group=index,
-                users=[user['name'] for user in group]))
+                users=[user['id'] for user in group]))
 
 
     def plot_map(self):
@@ -71,7 +71,7 @@ class GroupSplitter():
                     color=color, 
                     picker=True, 
                     marker=choice(markers),
-                    label=str(user['name']))
+                    label=str(user['id']))
             plotids.append((index, plotid))
 
         plt.legend(
@@ -82,39 +82,31 @@ class GroupSplitter():
         plt.show()
 
 
-    def __read_csv(self, file):
-        with open(file) as csv_users:
-            reader = csv.reader(csv_users)
+    def __read_csv(self, csv_file):
+        with open(csv_file) as csv_users:
+            reader = csv.DictReader(csv_users)
+            users = list()
+
+            skipped_users=0
             try:
-                headers = [item.lower() for item in next(reader)]
-            except UnicodeDecodeError as error:
-                print( 'I got a error!\nAre you sure this is a CSV file?\n\n{}'.format(error))
-                exit(1)
-
-            if all(header in headers for header in ['name', 'latitude', 'longitude']):
-                name = headers.index('name')
-                lat = headers.index('latitude')
-                lon = headers.index('longitude')
-                    
-                skipped_users = 0
-                users = list()
                 for user in reader:
-                    try:
-                        profile = {
-                                'name': str(user[name]),
-                                'latlon': (float(user[lat]), float(user[lon]))
-                            }
-                        users.append(profile)
-                    except ValueError:
-                        skipped_users += 1
+                    if all(key in user.keys() for key in ['id', 'latitude', 'longitude']):
+                        try:
+                            user['latlon'] = (float(user['latitude']), float(user['longitude']))
+                            users.append(user)
+                        except ValueError:
+                            skipped_users += 1
 
+                    else:
+                        print('''Data is not formatted correctly!\nCannot find some of these headers:
+                            {}
+                            {}
+                            {}'''.format( 'id', 'latitude', 'longitude'))
+                        exit()
                 if skipped_users > 0:
                     print('Skipped {rows} rows due to missing values'.format(rows=skipped_users))
-            else:
-                print('''Data is not formatted correctly!\nCannot find some of these headers:
-                    {}
-                    {}
-                    {}'''.format( 'name', 'latitude', 'longitude'))
+            except UnicodeDecodeError as error:
+                print( 'I got a error!\nAre you sure this is a CSV file?\n\n{}'.format(error))
                 exit()
 
         return users
@@ -188,7 +180,7 @@ class GroupSplitter():
             if not self.quiet:
                 print('Writing to file {}'.format(output_file))
             for index, group in enumerate(self.built_groups):
-                Names = ' '.join([user['name'] for user in group])
+                Names = ' '.join([user['id'] for user in group])
                 Group = index
                 writer.writerow({
                     'Group': 'Group {}'.format(Group),
