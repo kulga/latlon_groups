@@ -155,20 +155,18 @@ class GroupSplitter():
             for other_user in sorted(user_list_copy, 
                     key=lambda other_user: self.__distance(user['latlon'], other_user['latlon'])
                     ):
-                # If current_group not big enough, pop from user_list_copy
-                # and append to current_group
-                # Once list is big enough, break for loop
                 if len(current_group) <= self.num_per_group:
-                    current_group.append(user_list_copy.pop(user_list_copy.index(other_user)))
+                    current_group.append(other_user)
+                    del(user_list_copy[user_list_copy.index(other_user)])
                 else:
                     break
             if current_group and len(current_group) >= self.num_per_group:
                 groups_list.append(current_group)
             else:
-                groups_list[-1] += current_group
+                groups_list[-1].extend(current_group)
 
                 # After merge into previous group, see if previous group
-                # is double the size of the max number per group.
+                # is 1.5X the size of the max number per group.
                 # If it is, split it and append it as a new group
                 if len(groups_list[-1]) >= self.num_per_group * 1.5:
                     splitting_group = groups_list[-1][self.num_per_group:]
