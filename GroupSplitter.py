@@ -133,7 +133,6 @@ class GroupSplitter():
         """
         Splits user_list into n groups
         """
-        self.num_per_group = int(math.ceil(len(user_list) / int(groups)))
 
         # Make copy of user_list and sort it by longitude, west -> east
         user_list_copy = sorted(
