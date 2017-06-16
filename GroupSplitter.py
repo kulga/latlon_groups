@@ -143,28 +143,29 @@ class GroupSplitter():
         groups_list = list()
 
         for user in user_list_copy:
-            current_group = list()
+            if user:
+                current_group = list()
 
-            for other_user in sorted(user_list_copy, 
-                    key=lambda other_user: self.__distance(user['latlon'], other_user['latlon'])
-                    ):
-                if len(current_group) <= self.num_per_group:
-                    current_group.append(other_user)
-                    del(user_list_copy[user_list_copy.index(other_user)])
+                for other_user in sorted([user for user in user_list_copy if user != None], 
+                        key=lambda other_user: self.__distance(user['latlon'], other_user['latlon'])
+                        ):
+                    if len(current_group) <= self.num_per_group:
+                        current_group.append(other_user)
+                        user_list_copy[user_list_copy.index(other_user)] = None
+                    else:
+                        break
+                if current_group and len(current_group) >= self.num_per_group:
+                    groups_list.append(current_group)
                 else:
-                    break
-            if current_group and len(current_group) >= self.num_per_group:
-                groups_list.append(current_group)
-            else:
-                groups_list[-1].extend(current_group)
+                    groups_list[-1].extend(current_group)
 
-                # After merge into previous group, see if previous group
-                # is 1.5X the size of the max number per group.
-                # If it is, split it and append it as a new group
-                if len(groups_list[-1]) >= self.num_per_group * 1.5:
-                    splitting_group = groups_list[-1][self.num_per_group:]
-                    del(groups_list[-1][self.num_per_group:])
-                    groups_list.append(splitting_group)
+                    # After merge into previous group, see if previous group
+                    # is 1.5X the size of the max number per group.
+                    # If it is, split it and append it as a new group
+                    if len(groups_list[-1]) >= self.num_per_group * 1.5:
+                        splitting_group = groups_list[-1][self.num_per_group:]
+                        del(groups_list[-1][self.num_per_group:])
+                        groups_list.append(splitting_group)
 
         return groups_list
 
