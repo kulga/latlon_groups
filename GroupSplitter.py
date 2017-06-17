@@ -142,8 +142,11 @@ class GroupSplitter():
         groups_list = list()
 
         i = 0
-        while i < int(groups) - 1:
-            user = user_list_copy[i]
+        while i <= int(groups) - 1:
+            try:
+                user = user_list_copy[i]
+            except IndexError:
+                break
             current_group = list()
 
             for other_user in sorted(user_list_copy, 
