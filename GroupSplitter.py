@@ -141,10 +141,11 @@ class GroupSplitter():
 
         groups_list = list()
 
-        i = 0
-        while i <= int(groups) - 1:
+        point_user = 0 # Start matching from this user. Should == number of groups
+
+        while point_user <= int(groups) - 1:
             try:
-                user = user_list_copy[i]
+                user = user_list_copy[point_user]
             except IndexError:
                 break
             current_group = list()
@@ -155,9 +156,8 @@ class GroupSplitter():
                 if len(current_group) <= self.num_per_group:
                     current_group.append(other_user)
                     del(user_list_copy[user_list_copy.index(other_user)])
-                    #user_list_copy[user_list_copy.index(other_user)] = None
                 else:
-                    i += 1
+                    point_user += 1
                     break
             if current_group and len(current_group) >= self.num_per_group:
                 groups_list.append(current_group)
