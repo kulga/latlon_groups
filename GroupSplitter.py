@@ -140,10 +140,10 @@ class GroupSplitter():
                 key=lambda lon: lon['latlon'][1])
 
         groups_list = list()
-        point_user = 0 # Start matching from this user. Should == number of groups
+        num_groups = 0 # Start matching from this user. Should == number of groups
 
-        while point_user <= int(groups) - 1: # subtract 1 to match starting at 0
-            user = user_list_copy[point_user]
+        while num_groups <= int(groups) - 1: # subtract 1 to match starting at 0
+            user = user_list_copy[num_groups]
 
             current_group = list()
             for other_user in sorted(user_list_copy, 
@@ -156,7 +156,7 @@ class GroupSplitter():
                     break
             if current_group and len(current_group) >= self.num_per_group:
                 groups_list.append(current_group)
-                point_user += 1 # Group has been filled, increment
+                num_groups += 1 # Group has been filled, increment
             else:
                 groups_list[-1].extend(current_group)
 
@@ -167,7 +167,7 @@ class GroupSplitter():
                     splitting_group = groups_list[-1][self.num_per_group:]
                     del(groups_list[-1][self.num_per_group:])
                     groups_list.append(splitting_group)
-                    point_user += 1 # Group has been split, increment
+                    num_groups += 1 # Group has been split, increment
 
         return groups_list
 
