@@ -1,9 +1,5 @@
 #!/usr/bin/python3
 
-# Python2 support
-# https://docs.python.org/3/reference/simple_stmts.html#future-statements
-from __future__ import absolute_import, division, generators, unicode_literals, print_function, nested_scopes, with_statement
-
 import argparse
 import math 
 import csv
