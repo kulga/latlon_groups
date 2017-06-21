@@ -4,6 +4,8 @@ import argparse
 import math 
 import csv
 import sys
+import logging as log
+log.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
 
 from pprint import PrettyPrinter
 from random import choice
@@ -16,16 +18,18 @@ class GroupSplitter():
     '''
     Take csv file of users and their lat long and split into even groups
     '''
-    def __init__(self, csvfile, groups=2, quiet=False):
+    def __init__(self, csvfile, groups=2, loglevel=3 quiet=False):
         self.csvfile = csvfile
         self.groups = groups
         self.quiet = quiet
 
-        # Read list of users
-        users = list()
-        for file in self.csvfile:
-            users.extend(self.__read_csv(file))
-        self.num_per_group = int(math.ceil(len(users) / int(groups)))
+        loglevels = {
+                1 = 'DEBUG',
+                2 = 'INFO',
+                3 = 'WARNING',
+                4 = 'ERROR',
+                5 = 'CRITICAL' }
+        self.loglevel = loglevels[loglevel]
 
         self.built_groups = self.__build_groups(users, self.groups)
         if not self.quiet:
