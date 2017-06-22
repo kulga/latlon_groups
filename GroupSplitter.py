@@ -14,7 +14,6 @@ import matplotlib.pyplot as plt
 import matplotlib.cm as cm
 
 # Local - decorator
-from decorators import logging_decorator
 
 class GroupSplitter():
     '''
@@ -50,7 +49,6 @@ class GroupSplitter():
                 number=len(group)))
 
 
-    @logging_decorator
     def print_group(self, _format):
         import json, csv, pprint
 
@@ -119,7 +117,6 @@ class GroupSplitter():
         plt.show()
 
 
-    @logging_decorator
     def __read_csv(self, csv_file):
         with open(csv_file) as csv_users:
             reader = csv.DictReader(csv_users)
@@ -149,7 +146,6 @@ class GroupSplitter():
         return users
 
 
-    @logging_decorator
     def __distance(self, A, B):
         """
         Accepts two tuples (lat, long) of latitude and longitude
@@ -166,7 +162,6 @@ class GroupSplitter():
         return distance
 
 
-    @logging_decorator
     def __build_groups(self, user_list, groups=2):
         """
         Splits user_list into n groups
@@ -210,7 +205,6 @@ class GroupSplitter():
         return groups_list
 
 
-    @logging_decorator
     def write_csv(self, output_file):
         '''
         Write csv file of groups and their users
