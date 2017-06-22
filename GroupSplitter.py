@@ -21,10 +21,9 @@ class GroupSplitter():
     '''
     Take csv file of users and their lat long and split into even groups
     '''
-    def __init__(self, csvfile, groups=2, loglevel=3, quiet=False):
+    def __init__(self, csvfile, groups=2, loglevel=2):
         self.csvfile = csvfile
         self.groups = groups
-        self.quiet = quiet
         self.loglevel = loglevel
 
         loglevels = {
@@ -44,24 +43,26 @@ class GroupSplitter():
         self.num_per_group = int(math.ceil(len(users) / int(groups)))
 
         self.built_groups = self.__build_groups(users, self.groups)
-        if not self.quiet:
-            for index, group in enumerate(self.built_groups):
-                print('Group {index}: {number} members'.format(
-                index=index,
-                number=len(group)))
+
+        for index, group in enumerate(self.built_groups):
+            logging.info('Group {index}:  Members {number}'.format(
+            index=index,
+            number=len(group)))
 
 
     @logging_decorator
     def print_group(self, _format):
         import json, csv, pprint
 
-        groups = dict()
-        for index, group in enumerate(self.built_groups):
-            groups[index] = [user['id'] for user in group]
+        def output_data(built_groups):
+            groups = dict()
+            for index, group in enumerate(built_groups):
+                groups[index] = [user['id'] for user in group]
+            return groups
 
         def print_pprint(_dict):
-            pp = PrettyPrinter(indent=4)
-            pp.pprint(groups.items())
+            pp = PrettyPrinter(indent=1, width=80)
+            pp.pprint(_dict.items())
 
         def print_json(_dict):
             print(json.dumps(_dict, ensure_ascii=False))
@@ -146,7 +147,7 @@ class GroupSplitter():
                 if skipped_users > 0:
                     logging.info('Skipped {rows} rows due to missing values'.format(rows=skipped_users))
             except UnicodeDecodeError as error:
-                logging.error( 'I got a error!\nAre you sure this is a CSV file?\n\n{}'.format(error))
+                logging.critical( 'I got a error!\nAre you sure this is a CSV file?\n\n{}'.format(error))
                 sys.exit()
         return users
 
@@ -222,8 +223,8 @@ class GroupSplitter():
             writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
             writer.writeheader()
 
-            if not self.quiet:
-                print('Writing to file {}'.format(output_file))
+            logging.info('Writing to file {}'.format(output_file))
+
             for index, group in enumerate(self.built_groups):
                 Names = ' '.join([user['id'] for user in group])
                 Group = index
@@ -253,16 +254,17 @@ def main():
     parser.add_argument('--plot',
             action='store_true',
             help='Show colored visual plot map of groups')
-    parser.add_argument('-q', '--quiet',
-            default=False,
-            action='store_true',
-            help='Disable standard output of groups')
+    parser.add_argument('--loglevel',
+            default=2,
+            type=int,
+            choices=[0, 1, 2, 3, 4, 5],
+            help='Sets loglevel from DEBUG to CRITICAL')
     args = parser.parse_args()
 
     primary_group = GroupSplitter(
             args.file, 
             groups=args.groups, 
-            quiet=args.quiet)
+            loglevel=args.loglevel)
 
     if args.output:
         primary_group.write_csv(args.output)
