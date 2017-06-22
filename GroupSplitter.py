@@ -51,13 +51,37 @@ class GroupSplitter():
 
 
     @logging_decorator
-    def print_group(self):
+    def print_group(self, _format):
+        import json, csv, pprint
+
+        groups = dict()
         for index, group in enumerate(self.built_groups):
-            # Print out each group and its users
+            groups[index] = [user['id'] for user in group]
+
+        def print_pprint(_dict):
             pp = PrettyPrinter(indent=4)
-            pp.pprint('Group:{group} Users:{users}'.format(
-                group=index,
-                users=[user['id'] for user in group]))
+            pp.pprint(groups.items())
+
+        def print_json(_dict):
+            print(json.dumps(_dict, ensure_ascii=False))
+
+        def print_csv(_dict):
+            fieldnames = ['Group', 'Names']
+            writer = csv.DictWriter(sys.stdout, fieldnames=fieldnames)
+            writer.writeheader()
+
+            for Group, Names in _dict.items():
+                writer.writerow({
+                    'Group': 'Group {}'.format(Group),
+                    'Names': Names})
+
+        formats = {
+                'pprint': print_pprint,
+                'json': print_json,
+                'csv': print_csv }
+
+        formats[_format](groups)
+
 
 
     def plot_map(self):
@@ -221,9 +245,9 @@ def main():
     parser.add_argument('-o', '--output',
             help='Write to file in csv format')
     parser.add_argument('--print-group-users',
-            default=False,
-            action='store_true',
-            help='Print text list of groups to terminal')
+            choices=['pprint', 'json', 'csv'],
+            default=None,
+            help='Print out list of groups to terminal')
     parser.add_argument('--plot',
             action='store_true',
             help='Show colored visual plot map of groups')
@@ -242,7 +266,7 @@ def main():
         primary_group.write_csv(args.output)
 
     if args.print_group_users:
-        primary_group.print_group()
+        primary_group.print_group(args.print_group_users)
 
     if args.plot:
         primary_group.plot_map()
