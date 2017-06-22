@@ -5,7 +5,7 @@ import math
 import csv
 import sys
 import logging as log
-log.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
+log.basicConfig(level=log.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
 
 from pprint import PrettyPrinter
 from random import choice
@@ -24,14 +24,14 @@ class GroupSplitter():
         self.quiet = quiet
 
         loglevels = {
-                1 = 'DEBUG',
-                2 = 'INFO',
-                3 = 'WARNING',
-                4 = 'ERROR',
-                5 = 'CRITICAL' }
+                1: 'DEBUG',
+                2: 'INFO',
+                3: 'WARNING',
+                4: 'ERROR',
+                5: 'CRITICAL' }
         self.loglevel = loglevels[loglevel]
 
-    def __call__:
+    def __call__(self):
             # Read list of users
             users = list()
             for file in self.csvfile:
