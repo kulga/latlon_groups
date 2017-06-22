@@ -18,7 +18,7 @@ class GroupSplitter():
     '''
     Take csv file of users and their lat long and split into even groups
     '''
-    def __init__(self, csvfile, groups=2, loglevel=3 quiet=False):
+    def __init__(self, csvfile, groups=2, loglevel=3, quiet=False):
         self.csvfile = csvfile
         self.groups = groups
         self.quiet = quiet
