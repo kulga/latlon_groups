@@ -5,7 +5,7 @@ import math
 import csv
 import sys
 import logging
-logging.basicConfig(level=logging.DEBUG, format='+ %(asctime)s - %(levelname)s - %(message)s')
+logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
 
 from pprint import PrettyPrinter
 from random import choice
@@ -13,6 +13,7 @@ from random import choice
 # 3rd party - Plotting
 import matplotlib.pyplot as plt
 import matplotlib.cm as cm
+import numpy as np
 
 # Local - decorator
 from decorators import logging_decorator
@@ -92,10 +93,13 @@ class GroupSplitter():
         Generate visual map of plotted users
         """
         # Evenly sequenced numbers for scatter plot
-        colors = iter(cm.rainbow([
+        colors = cm.rainbow([
             0 + x*(1-0)/len(self.built_groups) 
-            for x in range(len(self.built_groups))]))
-        markers = ['x', '^', '*']
+            for x in range(len(self.built_groups))])
+        np.random.shuffle(colors)
+        colors = iter(colors)
+
+        markers = ['+','o','*','.','x','s','d','^','v','>','<','p','h']
 
         plotids = list()
         for index, groups in enumerate(self.built_groups):
@@ -139,15 +143,15 @@ class GroupSplitter():
                             skipped_users += 1
 
                     else:
-                        print('''Data is not formatted correctly!\nCannot find some of these headers:
+                        logging.critical('''Data is not formatted correctly!\nCannot find some of these headers:
                             {}
                             {}
                             {}'''.format( 'id', 'latitude', 'longitude'))
                         sys.exit()
                 if skipped_users > 0:
-                    logging.info('Skipped {rows} rows due to missing values'.format(rows=skipped_users))
+                    logging.warning('Skipped {rows} rows due to missing values'.format(rows=skipped_users))
             except UnicodeDecodeError as error:
-                logging.critical( 'I got a error!\nAre you sure this is a CSV file?\n\n{}'.format(error))
+                logging.critical( 'Are you sure {file} is a CSV file?\n{}'.format(error, file=str(csv_file)))
                 sys.exit()
         return users
 
