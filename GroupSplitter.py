@@ -73,15 +73,15 @@ class GroupSplitter():
 
             for Group, Names in _dict.items():
                 writer.writerow({
-                    'Group': 'Group {}'.format(Group),
-                    'Names': Names})
+                    'Group': 'Group{}'.format(Group),
+                    'Names': ' '.join([name for name in Names])})
 
         formats = {
                 'pprint': print_pprint,
                 'json': print_json,
                 'csv': print_csv }
 
-        formats[_format](groups)
+        formats[_format](output_data(self.built_groups))
 
 
 
