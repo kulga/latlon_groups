@@ -4,8 +4,7 @@ import argparse
 import math 
 import csv
 import sys
-import logging as log
-log.basicConfig(level=log.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
+import logging
 
 from pprint import PrettyPrinter
 from random import choice
@@ -14,38 +13,44 @@ from random import choice
 import matplotlib.pyplot as plt
 import matplotlib.cm as cm
 
+# Local - decorator
+from decorators import logging_decorator
+
 class GroupSplitter():
     '''
     Take csv file of users and their lat long and split into even groups
     '''
-    def __init__(self, csvfile, groups=2, loglevel=3, quiet=False):
+    def __init__(self, csvfile, groups=2, loglevel=0, quiet=False):
         self.csvfile = csvfile
         self.groups = groups
         self.quiet = quiet
+        self.loglevel = loglevel
+        #logging.basicConfig(level=logging.DEBUG, format='opk')
 
         loglevels = {
-                1: 'DEBUG',
-                2: 'INFO',
-                3: 'WARNING',
-                4: 'ERROR',
-                5: 'CRITICAL' }
-        self.loglevel = loglevels[loglevel]
+                0: None,
+                1: logging.getLogger().setLevel(logging.DEBUG),
+                2: logging.getLogger().setLevel(logging.INFO),
+                3: logging.getLogger().setLevel(logging.WARNING),
+                4: logging.getLogger().setLevel(logging.ERROR),
+                5: logging.getLogger().setLevel(logging.CRITICAL) }
+        loglevels[self.loglevel]
 
-    def __call__(self):
-            # Read list of users
-            users = list()
-            for file in self.csvfile:
-                users.extend(self.__read_csv(file))
-            self.num_per_group = int(math.ceil(len(users) / int(groups)))
+        # Read list of users
+        users = list()
+        for file in self.csvfile:
+            users.extend(self.__read_csv(file))
+        self.num_per_group = int(math.ceil(len(users) / int(groups)))
 
-            self.built_groups = self.__build_groups(users, self.groups)
-            if not self.quiet:
-                for index, group in enumerate(self.built_groups):
-                    print('Group {index}: {number} members'.format(
-                    index=index,
-                    number=len(group)))
+        self.built_groups = self.__build_groups(users, self.groups)
+        if not self.quiet:
+            for index, group in enumerate(self.built_groups):
+                print('Group {index}: {number} members'.format(
+                index=index,
+                number=len(group)))
 
 
+    @logging_decorator
     def print_group(self):
         for index, group in enumerate(self.built_groups):
             # Print out each group and its users
@@ -90,6 +95,7 @@ class GroupSplitter():
         plt.show()
 
 
+    @logging_decorator
     def __read_csv(self, csv_file):
         with open(csv_file) as csv_users:
             reader = csv.DictReader(csv_users)
@@ -112,14 +118,14 @@ class GroupSplitter():
                             {}'''.format( 'id', 'latitude', 'longitude'))
                         sys.exit()
                 if skipped_users > 0:
-                    print('Skipped {rows} rows due to missing values'.format(rows=skipped_users))
+                    logging.info('Skipped {rows} rows due to missing values'.format(rows=skipped_users))
             except UnicodeDecodeError as error:
-                print( 'I got a error!\nAre you sure this is a CSV file?\n\n{}'.format(error))
+                logging.error( 'I got a error!\nAre you sure this is a CSV file?\n\n{}'.format(error))
                 sys.exit()
-
         return users
 
 
+    @logging_decorator
     def __distance(self, A, B):
         """
         Accepts two tuples (lat, long) of latitude and longitude
@@ -136,6 +142,7 @@ class GroupSplitter():
         return distance
 
 
+    @logging_decorator
     def __build_groups(self, user_list, groups=2):
         """
         Splits user_list into n groups
@@ -179,6 +186,7 @@ class GroupSplitter():
         return groups_list
 
 
+    @logging_decorator
     def write_csv(self, output_file):
         '''
         Write csv file of groups and their users
