@@ -31,12 +31,19 @@ class GroupSplitter():
                 5 = 'CRITICAL' }
         self.loglevel = loglevels[loglevel]
 
-        self.built_groups = self.__build_groups(users, self.groups)
-        if not self.quiet:
-            for index, group in enumerate(self.built_groups):
-                print('Group {index}: {number} members'.format(
-                index=index,
-                number=len(group)))
+    def __call__:
+            # Read list of users
+            users = list()
+            for file in self.csvfile:
+                users.extend(self.__read_csv(file))
+            self.num_per_group = int(math.ceil(len(users) / int(groups)))
+
+            self.built_groups = self.__build_groups(users, self.groups)
+            if not self.quiet:
+                for index, group in enumerate(self.built_groups):
+                    print('Group {index}: {number} members'.format(
+                    index=index,
+                    number=len(group)))
 
 
     def print_group(self):
