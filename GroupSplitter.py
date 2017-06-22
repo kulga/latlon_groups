@@ -5,6 +5,7 @@ import math
 import csv
 import sys
 import logging
+logging.basicConfig(level=logging.DEBUG, format='+ %(asctime)s - %(levelname)s - %(message)s')
 
 from pprint import PrettyPrinter
 from random import choice
@@ -14,26 +15,27 @@ import matplotlib.pyplot as plt
 import matplotlib.cm as cm
 
 # Local - decorator
+from decorators import logging_decorator
 
 class GroupSplitter():
     '''
     Take csv file of users and their lat long and split into even groups
     '''
-    def __init__(self, csvfile, groups=2, loglevel=0, quiet=False):
+    def __init__(self, csvfile, groups=2, loglevel=3, quiet=False):
         self.csvfile = csvfile
         self.groups = groups
         self.quiet = quiet
         self.loglevel = loglevel
-        #logging.basicConfig(level=logging.DEBUG, format='opk')
 
         loglevels = {
                 0: None,
-                1: logging.getLogger().setLevel(logging.DEBUG),
-                2: logging.getLogger().setLevel(logging.INFO),
-                3: logging.getLogger().setLevel(logging.WARNING),
-                4: logging.getLogger().setLevel(logging.ERROR),
-                5: logging.getLogger().setLevel(logging.CRITICAL) }
-        loglevels[self.loglevel]
+                1: logging.DEBUG,
+                2: logging.INFO,
+                3: logging.WARNING,
+                4: logging.ERROR,
+                5: logging.CRITICAL }
+        if loglevels[loglevel]:
+            logging.getLogger().setLevel(loglevels[loglevel])
 
         # Read list of users
         users = list()
@@ -49,6 +51,7 @@ class GroupSplitter():
                 number=len(group)))
 
 
+    @logging_decorator
     def print_group(self, _format):
         import json, csv, pprint
 
@@ -82,6 +85,7 @@ class GroupSplitter():
 
 
 
+    @logging_decorator
     def plot_map(self):
         """
         Generate visual map of plotted users
@@ -117,6 +121,7 @@ class GroupSplitter():
         plt.show()
 
 
+    @logging_decorator
     def __read_csv(self, csv_file):
         with open(csv_file) as csv_users:
             reader = csv.DictReader(csv_users)
@@ -146,6 +151,7 @@ class GroupSplitter():
         return users
 
 
+    @logging_decorator
     def __distance(self, A, B):
         """
         Accepts two tuples (lat, long) of latitude and longitude
@@ -162,6 +168,7 @@ class GroupSplitter():
         return distance
 
 
+    @logging_decorator
     def __build_groups(self, user_list, groups=2):
         """
         Splits user_list into n groups
@@ -205,6 +212,7 @@ class GroupSplitter():
         return groups_list
 
 
+    @logging_decorator
     def write_csv(self, output_file):
         '''
         Write csv file of groups and their users
