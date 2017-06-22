@@ -5,7 +5,7 @@ import math
 import csv
 import sys
 import logging
-logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
+logging.basicConfig(level=logging.DEBUG, stream=sys.stderr, format='%(asctime)s - %(levelname)s - %(message)s')
 
 from pprint import PrettyPrinter
 from random import choice
@@ -22,20 +22,22 @@ class GroupSplitter():
     '''
     Take csv file of users and their lat long and split into even groups
     '''
-    def __init__(self, csvfile, groups=2, loglevel=2):
+    def __init__(self, csvfile, groups=2, loglevel=4):
         self.csvfile = csvfile
         self.groups = groups
         self.loglevel = loglevel
 
         loglevels = {
                 0: None,
-                1: logging.DEBUG,
-                2: logging.INFO,
+                5: logging.DEBUG,
+                4: logging.INFO,
                 3: logging.WARNING,
-                4: logging.ERROR,
-                5: logging.CRITICAL }
+                2: logging.ERROR,
+                1: logging.CRITICAL }
         if loglevels[loglevel]:
             logging.getLogger().setLevel(loglevels[loglevel])
+        else:
+            logging.disable(logging.CRITICAL)
 
         # Read list of users
         users = list()
@@ -251,7 +253,7 @@ def main():
             help='Set desired number of groups. Will be split as evenly as possible')
     parser.add_argument('-o', '--output',
             help='Write to file in csv format')
-    parser.add_argument('--print-group-users',
+    parser.add_argument('--print-user-groups',
             choices=['pprint', 'json', 'csv'],
             default=None,
             help='Print out list of groups to terminal')
@@ -259,10 +261,10 @@ def main():
             action='store_true',
             help='Show colored visual plot map of groups')
     parser.add_argument('--loglevel',
-            default=2,
             type=int,
             choices=[0, 1, 2, 3, 4, 5],
-            help='Sets loglevel from DEBUG to CRITICAL')
+            default=4,
+            help='Increase level for more verbosity. 0 diables logging')
     args = parser.parse_args()
 
     primary_group = GroupSplitter(
@@ -273,8 +275,8 @@ def main():
     if args.output:
         primary_group.write_csv(args.output)
 
-    if args.print_group_users:
-        primary_group.print_group(args.print_group_users)
+    if args.print_user_groups:
+        primary_group.print_group(args.print_user_groups)
 
     if args.plot:
         primary_group.plot_map()
