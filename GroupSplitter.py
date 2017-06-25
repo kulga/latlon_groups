@@ -198,7 +198,7 @@ class GroupSplitter():
                     ):
                 if len(current_group) <= self.num_per_group:
                     current_group.append(other_user)
-                    del(user_list_copy[user_list_copy.index(other_user)])
+                    user_list_copy.remove(other_user)
                 else:
                     break
             if current_group and len(current_group) >= self.num_per_group:
