@@ -17,6 +17,7 @@ import numpy as np
 
 # Local - decorator
 from decorators import logging_decorator
+from distance import distance
 
 class GroupSplitter():
     '''
@@ -159,23 +160,6 @@ class GroupSplitter():
 
 
     @logging_decorator
-    def __distance(self, A, B):
-        """
-        Accepts two tuples (lat, long) of latitude and longitude
-        To identify distances
-        """
-
-        a_lat, a_long = A
-        b_lat, b_long = B
-
-        x = (b_long - a_long) * math.cos((a_lat + b_lat) / 2)
-        y = b_lat - a_lat
-        distance = math.sqrt(x ** 2 + y ** 2) * 6371
-
-        return distance
-
-
-    @logging_decorator
     def __build_groups(self, user_list, groups=2):
         """
         Splits user_list into n groups
@@ -194,7 +178,7 @@ class GroupSplitter():
 
             current_group = list()
             for other_user in sorted(user_list_copy, 
-                    key=lambda other_user: self.__distance(user['latlon'], other_user['latlon'])
+                    key=lambda other_user: distance(user['latlon'], other_user['latlon'])
                     ):
                 if len(current_group) <= self.num_per_group:
                     current_group.append(other_user)
