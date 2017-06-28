@@ -166,28 +166,27 @@ class GroupSplitter():
         """
 
         # Make copy of user_list and sort it by longitude, west -> east
-        user_list_copy = sorted(
-                list(user_list), 
-                key=lambda lon: lon['latlon'][1])
+        user_list_copy = tuple(sorted(
+                user_list, 
+                key=lambda lon: lon['latlon'][1]))
 
         groups_list = list()
-        num_groups = 0 # Start matching from this user. Should == number of groups
+        accounted_for = set()
 
-        while num_groups <= int(groups) - 1: # subtract 1 to match starting at 0
-            user = user_list_copy[num_groups]
+        for user in user_list_copy:
+            if user['id'] in accounted_for: continue # ignore rest of this loop
 
             current_group = list()
-            for other_user in sorted(user_list_copy, 
+            for other_user in sorted([user for user in user_list_copy if user['id'] not in accounted_for], 
                     key=lambda other_user: distance(user['latlon'], other_user['latlon'])
                     ):
                 if len(current_group) <= self.num_per_group:
                     current_group.append(other_user)
-                    user_list_copy.remove(other_user)
+                    accounted_for.add(other_user['id'])
                 else:
                     break
             if current_group and len(current_group) >= self.num_per_group:
                 groups_list.append(current_group)
-                num_groups += 1 # Group has been filled, increment
             else:
                 groups_list[-1].extend(current_group)
 
@@ -198,7 +197,6 @@ class GroupSplitter():
                     splitting_group = groups_list[-1][self.num_per_group:]
                     del(groups_list[-1][self.num_per_group:])
                     groups_list.append(splitting_group)
-                    num_groups += 1 # Group has been split, increment
 
         return groups_list
 
