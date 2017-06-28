@@ -14,6 +14,7 @@ from random import choice
 import matplotlib.pyplot as plt
 import matplotlib.cm as cm
 import numpy as np
+import mpld3
 
 # Local - decorator
 from decorators import logging_decorator
@@ -87,6 +88,14 @@ class GroupSplitter():
                 'csv': print_csv }
 
         formats[_format](output_data(self.built_groups))
+
+    @logging_decorator
+    def plot_interactive_map(self):
+        """
+        Generate interactive map of plotted users
+        """
+
+        fig, ax = plt.subplots(subplot_kw=dict(axisbg='#EEEEEE'))
 
 
 
