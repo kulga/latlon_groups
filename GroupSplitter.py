@@ -114,6 +114,7 @@ class GroupSplitter():
                 y_values.append(float(y))
             scatter = ax.scatter(x_values,
                                  y_values,
+                                 s=100 * self.num_per_group,
                                  c=color,
                                  alpha=1,
                                  cmap=plt.cm.jet)
