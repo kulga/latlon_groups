@@ -14,6 +14,7 @@ from random import choice
 import matplotlib.pyplot as plt
 import matplotlib.cm as cm
 import numpy as np
+import mpld3
 
 # Local - decorator
 from decorators import logging_decorator
@@ -88,6 +89,42 @@ class GroupSplitter():
 
         formats[_format](output_data(self.built_groups))
 
+    @logging_decorator
+    def plot_interactive_map(self):
+        """
+        Generate interactive map of plotted users
+        """
+        # Evenly sequenced numbers for scatter plot
+        colors = cm.rainbow([
+            0 + x*(1-0)/len(self.built_groups) 
+            for x in range(len(self.built_groups))])
+        np.random.shuffle(colors)
+        colors = iter(colors)
+        markers = ['+','o','*','.','x','s','d','^','v','>','<','p','h']
+
+        fig, ax = plt.subplots(figsize=(20,10), subplot_kw=dict(axisbg='#EEEEEE'))
+
+        for index, group in enumerate(self.built_groups):
+            color = next(colors)
+            x_values = list()
+            y_values = list()
+            for user in group:
+                y, x = user['latlon']
+                x_values.append(float(x))
+                y_values.append(float(y))
+            scatter = ax.scatter(x_values,
+                                 y_values,
+                                 c=color,
+                                 alpha=1,
+                                 cmap=plt.cm.jet)
+
+            labels = ['G: {}, U:{}'.format(index, user['id']) for user in group]
+            tooltip = mpld3.plugins.PointLabelTooltip(scatter, labels=labels)
+            mpld3.plugins.connect(fig, tooltip)
+
+        ax.set_title('Groups')
+        ax.grid(color='white', linestyle='solid')
+        mpld3.show()
 
 
     @logging_decorator
@@ -242,6 +279,9 @@ def main():
     parser.add_argument('--plot',
             action='store_true',
             help='Show colored visual plot map of groups')
+    parser.add_argument('--interactive-plot',
+            action='store_true',
+            help='Show interactive colored visual plot map of groups. Large values may cause this to lag!')
     parser.add_argument('--loglevel',
             type=int,
             choices=[0, 1, 2, 3, 4, 5],
@@ -262,6 +302,8 @@ def main():
 
     if args.plot:
         primary_group.plot_map()
+    elif args.interactive_plot:
+        primary_group.plot_interactive_map()
 
 
 if __name__ == '__main__':
